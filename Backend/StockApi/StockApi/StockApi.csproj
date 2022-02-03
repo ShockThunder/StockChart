@@ -7,7 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Google.Apis.Sheets.v4" Version="1.55.0.2371" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Update="molten-snowfall-229304-c60799baa9b3.json">
+            <CopyToOutputDirectory>
+                Always
+            </CopyToOutputDirectory>            
+        </None>
     </ItemGroup>
 
 </Project>

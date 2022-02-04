@@ -12,7 +12,7 @@ public class StockService
     private const string APPLICATION_NAME = "StockApp";
     private const string SPREADSHEET_ID = "1LuGgCKXU2GIH-6vUGsg6g62URC_muakIRuWiEr3LE3E";
     private const string SHEET_NAME = "Sheet1";
-    private const string RANGE = $"{SHEET_NAME}!A2:B50";
+    private const string RANGE = $"{SHEET_NAME}!A2:B252";
 
     private SheetsService _service;
 
@@ -43,7 +43,7 @@ public class StockService
         if (values != null && values.Count > 0)
             return values.Select(value => new StockEntry
             {
-                DateTime = Convert.ToDateTime(value[0], CultureInfo.InvariantCulture),
+                DateTime = Convert.ToDateTime(value[0], CultureInfo.InvariantCulture).ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK"),
                 Value = Convert.ToDouble(value[1], CultureInfo.InvariantCulture)
             }).ToList();
 

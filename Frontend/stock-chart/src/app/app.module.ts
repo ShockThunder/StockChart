@@ -5,7 +5,7 @@ import { AppComponent } from './app.component';
 import { OutputGraphComponent } from './output-graph/output-graph.component';
 import { FormsModule } from "@angular/forms";
 import { HighchartsChartModule } from "highcharts-angular";
-
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,8 @@ import { HighchartsChartModule } from "highcharts-angular";
   imports: [
     BrowserModule,
     HighchartsChartModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 })
 export class DataService {
 
-  private serverUrl = 'http://localhost:5253/stockdata'
+  private serverUrl = 'http://localhost:9000/stockdata'
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
   };

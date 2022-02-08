@@ -1,13 +1,26 @@
-version: '2'
+version: "3.9"
 
 services:
-  mongodb:
-    image: docker.io/bitnami/mongodb:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - 'mongodb_data:/bitnami/mongodb'
-
-volumes:
-  mongodb_data:
-    driver: local
+    stockback:
+        container_name: back
+        build: ./Backend/StockApi
+        ports:
+            - "9000:80"
+        depends_on:
+            - database
+        
+    stockfront:
+        container_name: front
+        build: ./Frontend/stock-chart
+        ports:
+            - "4200:80"
+        depends_on:
+            - back
+            
+    database:
+        container_name: backdb
+        image: mongo
+        ports:
+            - "27017:27017"
+        volumes:
+            - ${WEBAPP_STORAGE_HOME}/site:/data/db

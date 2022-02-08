@@ -4,10 +4,14 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 
+using MongoDB.Driver;
+
 namespace StockApi;
 
 public class StockService
 {
+    private IMongoCollection<StockEntry> _stockData;
+    private readonly IConfiguration _configuration;
     private readonly string[] _scopes = {SheetsService.Scope.Spreadsheets};
     private const string APPLICATION_NAME = "StockApp";
     private const string SPREADSHEET_ID = "1LuGgCKXU2GIH-6vUGsg6g62URC_muakIRuWiEr3LE3E";
@@ -16,7 +20,35 @@ public class StockService
 
     private SheetsService _service;
 
-    public List<StockEntry> GetData()
+    public StockService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public async Task<List<StockEntry>> GetData()
+    {
+        var mongoClient = new MongoClient(
+            _configuration.GetSection("MongoDb").GetValue<string>("ConnectionString"));
+
+        var mongoDatabase = mongoClient.GetDatabase(
+            _configuration.GetSection("MongoDb").GetValue<string>("DatabaseName"));
+
+        _stockData = mongoDatabase.GetCollection<StockEntry>(
+            _configuration.GetSection("MongoDb").GetValue<string>("CollectionName"));
+
+        var result = await (await _stockData.FindAsync(_ => true)).ToListAsync();
+
+        if (result.Count == 0)
+        {
+            result = GetFromSheets();
+
+            await _stockData.InsertManyAsync(result);
+        }
+
+        return result;
+    }
+
+    private List<StockEntry> GetFromSheets()
     {
         GoogleCredential credential;
         using (var stream = new FileStream("molten-snowfall-229304-c60799baa9b3.json", FileMode.Open, FileAccess.Read))

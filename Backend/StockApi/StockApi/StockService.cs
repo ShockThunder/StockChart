@@ -29,20 +29,25 @@ public class StockService
     {
         var mongoClient = new MongoClient(
             _configuration["DatabaseSettings:ConnectionString"]);
-
-        Console.WriteLine(_configuration["DatabaseSettings:ConnectionString"]);
-        Console.WriteLine(mongoClient.ListDatabases().First());
         var mongoDatabase = mongoClient.GetDatabase(
             _configuration.GetSection("DatabaseSettings").GetValue<string>("DatabaseName"));
-        Console.WriteLine("connected to database");
+
         _stockData = mongoDatabase.GetCollection<StockEntry>(
             _configuration.GetSection("DatabaseSettings").GetValue<string>("CollectionName"));
-        Console.WriteLine(mongoClient.ListDatabases().First().ToString());
         var result = await (await _stockData.FindAsync(_ => true)).ToListAsync();
 
         if (result.Count == 0)
         {
-            result = GetFromSheets();
+            try
+            {
+                result = GetFromSheets();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.InnerException);
+                return result;
+            }
+            
 
             await _stockData.InsertManyAsync(result);
         }

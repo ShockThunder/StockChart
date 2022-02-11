@@ -28,14 +28,16 @@ public class StockService
     public async Task<List<StockEntry>> GetData()
     {
         var mongoClient = new MongoClient(
-            _configuration.GetSection("MongoDb").GetValue<string>("ConnectionString"));
+            _configuration["DatabaseSettings:ConnectionString"]);
 
+        Console.WriteLine(_configuration["DatabaseSettings:ConnectionString"]);
+        Console.WriteLine(mongoClient.ListDatabases().First());
         var mongoDatabase = mongoClient.GetDatabase(
-            _configuration.GetSection("MongoDb").GetValue<string>("DatabaseName"));
-
+            _configuration.GetSection("DatabaseSettings").GetValue<string>("DatabaseName"));
+        Console.WriteLine("connected to database");
         _stockData = mongoDatabase.GetCollection<StockEntry>(
-            _configuration.GetSection("MongoDb").GetValue<string>("CollectionName"));
-
+            _configuration.GetSection("DatabaseSettings").GetValue<string>("CollectionName"));
+        Console.WriteLine(mongoClient.ListDatabases().First().ToString());
         var result = await (await _stockData.FindAsync(_ => true)).ToListAsync();
 
         if (result.Count == 0)

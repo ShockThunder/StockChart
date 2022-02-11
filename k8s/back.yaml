@@ -49,4 +49,3 @@ spec:
       port: 8000
       targetPort: 80
       nodePort: 31000
-

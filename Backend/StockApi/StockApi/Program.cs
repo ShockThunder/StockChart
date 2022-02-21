@@ -1,6 +1,9 @@
+using MediatR;
+
 using Microsoft.AspNetCore.Mvc;
 
 using StockApi;
+using StockApi.Query;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSingleton<StockService>();
+builder.Services.AddMediatR(typeof(GetStockDataQuery).Assembly);
 builder.Services.AddCors();
 
 var app = builder.Build();
@@ -45,7 +48,7 @@ app.MapGet("/weatherforecast", () =>
     })
     .WithName("GetWeatherForecast");
 
-app.MapGet("/stockdata", ([FromServices] StockService service) => service.GetData());
+app.MapGet("/stockdata", async ([FromServices] IMediator mediator) => await mediator.Send(new GetStockDataQuery()));
 
 app.Run();
 

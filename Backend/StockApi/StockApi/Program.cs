@@ -2,7 +2,6 @@ using MediatR;
 
 using Microsoft.AspNetCore.Mvc;
 
-using StockApi;
 using StockApi.Query;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +28,8 @@ app.UseCors(x => x
     .SetIsOriginAllowed(origin => true) // allow any origin
     .AllowCredentials()); // allow credentials
 
+app.MapGet("/stockdata", async ([FromServices] IMediator mediator) => await mediator.Send(new GetStockDataQuery()));
+
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -48,7 +49,6 @@ app.MapGet("/weatherforecast", () =>
     })
     .WithName("GetWeatherForecast");
 
-app.MapGet("/stockdata", async ([FromServices] IMediator mediator) => await mediator.Send(new GetStockDataQuery()));
 
 app.Run();
 

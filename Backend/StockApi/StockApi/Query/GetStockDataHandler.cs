@@ -4,12 +4,15 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Sheets.v4;
 
+using JetBrains.Annotations;
+
 using MediatR;
 
 using MongoDB.Driver;
 
 namespace StockApi.Query;
 
+[PublicAPI]
 public class GetStockDataHandler : IRequestHandler<GetStockDataQuery, List<StockEntry>>
 {
     private IMongoCollection<StockEntry> _stockData;
@@ -78,8 +81,7 @@ public class GetStockDataHandler : IRequestHandler<GetStockDataQuery, List<Stock
     {
         var request = _service.Spreadsheets.Values.Get(SPREADSHEET_ID, RANGE);
 
-        var response = request.Execute();
-        var values = response.Values;
+        var values = request.Execute().Values;
 
         if (values != null && values.Count > 0)
             return values.Select(value => new StockEntry

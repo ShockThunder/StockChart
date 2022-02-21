@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="Google.Apis.Sheets.v4" Version="1.55.0.2371" />
+        <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
         <PackageReference Include="MediatR" Version="10.0.1" />
         <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
         <PackageReference Include="MongoDB.Driver" Version="2.14.1" />

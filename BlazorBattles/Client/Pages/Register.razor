@@ -60,6 +60,12 @@
 @code {
     UserRegister user = new UserRegister();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await _unitService.LoadUnitsAsync();
+        await base.OnInitializedAsync();
+    }
+
     void HandleRegistration()
     {
         _jsRuntime.InvokeVoidAsync("console.log", user);

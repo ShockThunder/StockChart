@@ -1,5 +1,7 @@
-﻿using BlazorBattles.Shared;
+﻿using BlazorBattles.Server.Data;
+using BlazorBattles.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorBattles.Server.Controllers
 {
@@ -7,17 +9,25 @@ namespace BlazorBattles.Server.Controllers
     [ApiController]
     public class UnitController : ControllerBase
     {
-        public IList<Unit> Units = new List<Unit>
+        private readonly DataContext _context;
+        public UnitController(DataContext context)
         {
-            new Unit { Id = 1, Title = "Knight", Attack = 10, Defense = 10, BananaCost = 100 },
-            new Unit { Id = 2, Title = "Archer", Attack = 15, Defense = 5, BananaCost = 150 },
-            new Unit { Id = 3, Title = "Mage", Attack = 20, Defense = 1, BananaCost = 200 },
-        };
+            _context = context;
+        }
     
         [HttpGet]
-        public IActionResult GetUnits()
+        public async Task<IActionResult> GetUnits()
         {
-            return Ok(Units);
+            var units = await _context.Units.ToListAsync();
+            return Ok(units);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUnit(Unit unit)
+        {
+            _context.Add(unit);
+            await _context.SaveChangesAsync();
+            return Ok(await _context.Units.ToListAsync());
         }
     }
 }

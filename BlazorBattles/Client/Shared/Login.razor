@@ -29,7 +29,7 @@ Please log in below or <a href="register">register</a> for a new account.
 
         if (result.Success)
         {
-            await _localStorage.SetItemAsync<bool>("isAuthenticated", true);
+            await _localStorage.SetItemAsync<string>("authToken", result.Data);
             await _authenticationStateProvider.GetAuthenticationStateAsync();
         }
         else

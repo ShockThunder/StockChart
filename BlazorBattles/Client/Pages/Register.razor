@@ -2,6 +2,8 @@
 @inject IUnitService _unitService
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navigationManager
+@inject IToastService _toastService
+@inject IAuthService _authService
 
 <h3>Register</h3>
 
@@ -66,10 +68,17 @@
         await base.OnInitializedAsync();
     }
 
-    void HandleRegistration()
+    async void HandleRegistration()
     {
-        _jsRuntime.InvokeVoidAsync("console.log", user);
-        _navigationManager.NavigateTo("login");
+        var result = await _authService.Register(user);
+        if (result.Success)
+        {
+            _toastService.ShowSuccess(result.Message);
+            _navigationManager.NavigateTo("/");
+        }
+        else
+        {
+            _toastService.ShowError(result.Message);
+        }
     }
-
 }

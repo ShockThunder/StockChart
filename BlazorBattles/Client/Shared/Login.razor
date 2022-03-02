@@ -1,18 +1,19 @@
 ﻿@inject ILocalStorageService _localStorage
 @inject AuthenticationStateProvider _authenticationStateProvider
-
+@inject IAuthService _authService
+@inject IToastService _toastService
 Please log in below or <a href="register">register</a> for a new account.
 
 
 <EditForm Model="user" OnValidSubmit="HandleLogin">
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <div class="form-group">
-        <label for="username">Username</label>
-        <InputText id="username" @bind-Value="user.Username" class="form-control"></InputText>
+        <label for="email">Email</label>
+        <InputText id="email" @bind-Value="user.Email" class="form-control"></InputText>
     </div>
     <div class="form-group">
         <label for="password">Password</label>
-        <InputText id="password" @bind-Value="user.Password" class="form-control"></InputText>
+        <InputText id="password" @bind-Value="user.Password" class="form-control" type="password"></InputText>
     </div>
     <button type="submit" class="btn btn-primary">Login</button>
     <ValidationSummary></ValidationSummary>
@@ -20,13 +21,20 @@ Please log in below or <a href="register">register</a> for a new account.
 
 
 @code {
-    bool isAuthenticated = false;
-
     private UserLogin user = new UserLogin();
 
     private async void HandleLogin()
     {
-        await _localStorage.SetItemAsync<bool>("isAuthenticated", true);
-        await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var result = await _authService.Login(user);
+
+        if (result.Success)
+        {
+            await _localStorage.SetItemAsync<bool>("isAuthenticated", true);
+            await _authenticationStateProvider.GetAuthenticationStateAsync();
+        }
+        else
+        {
+            _toastService.ShowError(result.Message);
+        }
     }
 }

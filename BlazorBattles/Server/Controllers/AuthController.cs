@@ -1,5 +1,6 @@
 ﻿using BlazorBattles.Server.Data;
 using BlazorBattles.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +28,19 @@ namespace BlazorBattles.Server.Controllers
                 DateOfBirth = request.BirthDate,
                 IsConfirmed = request.IsConfirmed,
             }, request.Password);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLogin request)
+        {
+            var response = await _authRepository.Login(request.Email, request.Password);
 
             if (!response.Success)
             {

@@ -13,9 +13,11 @@ namespace BlazorBattles.Server.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Unit>().Property(p => p.Id).UseIdentityAlwaysColumn();
+            modelBuilder.Entity<User>().Property(p => p.Id).UseIdentityAlwaysColumn();
             base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Unit> Units { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }

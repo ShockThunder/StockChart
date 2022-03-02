@@ -48,7 +48,7 @@ namespace BlazorBattles.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Units");
+                    b.ToTable("Units", (string)null);
                 });
 
             modelBuilder.Entity("BlazorBattles.Shared.User", b =>
@@ -92,7 +92,7 @@ namespace BlazorBattles.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 #pragma warning restore 612, 618
         }

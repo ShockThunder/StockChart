@@ -1,4 +1,5 @@
-﻿using Blazored.LocalStorage;
+﻿using BlazorBattles.Client.Services;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Security.Claims;
 using System.Text.Json;
@@ -7,14 +8,16 @@ namespace BlazorBattles.Client
 {
     public class CustomAuthProvider : AuthenticationStateProvider
     {
-        public CustomAuthProvider(ILocalStorageService localStorageService, HttpClient httpClient)
+        public CustomAuthProvider(ILocalStorageService localStorageService, HttpClient httpClient, IBananaService bananaService)
         {
             _localStorageService = localStorageService;
             _httpClient = httpClient;
+            _bananaService = bananaService;
         }
 
         private readonly ILocalStorageService _localStorageService;
         private readonly HttpClient _httpClient;
+        private readonly IBananaService _bananaService;
 
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
@@ -25,9 +28,19 @@ namespace BlazorBattles.Client
 
             if (!string.IsNullOrEmpty(authToken))
             {
-                identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
-                _httpClient.DefaultRequestHeaders.Authorization = 
-                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+                try
+                {
+                    identity = new ClaimsIdentity(ParseClaimsFromJwt(authToken), "jwt");
+                    _httpClient.DefaultRequestHeaders.Authorization =
+                        new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken.Replace("\"", ""));
+                    await _bananaService.GetBananas();
+                }
+                catch (Exception)
+                {
+                    await _localStorageService.RemoveItemAsync("authToken");
+                    identity = new ClaimsIdentity();
+                }
+                
             }
 
             var user = new ClaimsPrincipal(identity);

@@ -38,20 +38,8 @@
         await base.OnInitializedAsync();
     }
 
-    public void BuildUnit()
+    public async Task BuildUnit()
     {
-        var selectedUnit = _unitService.Units.FirstOrDefault(unit => unit.Id == selectedUnitId);
-
-        if (_bananaService.Bananas < selectedUnit.BananaCost)
-        {
-            needMoreBananas = true;
-            _toastService.ShowError("Not enough bananas!", "=(");
-            return;
-        }
-
-        needMoreBananas = false;
-
-        _bananaService.EatBananas(selectedUnit.BananaCost);
-        _unitService.AddUnit(selectedUnitId);
+        await _unitService.AddUnit(selectedUnitId);
     }
 }

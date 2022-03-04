@@ -27,7 +27,7 @@ namespace BlazorBattles.Server.Controllers
         {
             var unit = await _context.Units.FirstOrDefaultAsync(x => x.Id == unitId);
             var user = await _utilityService.GetUser();
-            if(user.Bananas < unit.BananaCost)
+            if (user.Bananas < unit.BananaCost)
             {
                 return BadRequest("Not enough bananas!");
             }
@@ -44,6 +44,25 @@ namespace BlazorBattles.Server.Controllers
             _context.UserUnits.Add(newUserUnit);
             await _context.SaveChangesAsync();
             return Ok(newUserUnit);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserUnits()
+        {
+            var user = await _utilityService.GetUser();
+            var userUnits = await _context.UserUnits.Where(x => x.UserId == user.Id).ToListAsync();
+            foreach (var item in userUnits)
+            {
+                Console.WriteLine($"{item.UnitId} --- {item.UserId}");
+            }
+            var response = userUnits.Select(
+                unit => new UserUnitResponse
+                {
+                    UnitId = unit.UnitId,
+                    HitPoints = unit.HitPoints
+                });
+
+            return Ok(response);
         }
     }
 }

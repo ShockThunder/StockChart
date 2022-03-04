@@ -12,5 +12,6 @@
         public bool IsConfirmed { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+        public List<UserUnit> Units { get; set; }
     }
 }

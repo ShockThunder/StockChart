@@ -2,6 +2,9 @@
 @using System.Security.Claims
 @inject ILeaderboardService _leadrboardService;
 @inject AuthenticationStateProvider _authStateProvider;
+@inject IBattleService _battleService;
+@inject IBananaService _bananaService;
+@inject IToastService _toastService;
 
 <h3>Leaderboard</h3>
 
@@ -35,7 +38,7 @@ else
                     <td>@entry.Battles</td>
                     @if (entry.UserId != myUserId)
                     {
-                        <td><button class="btn btn-primary">Fight</button></td>
+                        <td><button class="btn btn-primary" @onclick="(() => StartBattle(entry.UserId))">Fight</button></td>
                     }
                 </tr>
             }
@@ -61,5 +64,20 @@ else
             return "color: green; font-weight: 600;";
 
         return string.Empty;
+    }
+
+    public async Task StartBattle(int opponentId)
+    {
+        Console.WriteLine($"Start battle with {opponentId}");
+        var result = await _battleService.StartBattle(opponentId);
+        if (result.RoundsFought <= 0)
+            _toastService.ShowInfo("The battle did not take place");
+        else if (result.IsVictory)
+            _toastService.ShowSuccess("You won the battle!");
+        else
+            _toastService.ShowWarning("You lost the battle");
+
+        await _leadrboardService.GetLeaderboard();
+        await _bananaService.GetBananas();
     }
 }

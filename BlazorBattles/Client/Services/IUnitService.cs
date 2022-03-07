@@ -11,4 +11,6 @@ public interface IUnitService
     Task LoadUnitsAsync();
 
     Task LoadUserUnitsAsync();
+
+    Task ReviveArmy();
 }

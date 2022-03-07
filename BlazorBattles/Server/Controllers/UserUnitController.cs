@@ -64,5 +64,37 @@ namespace BlazorBattles.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("revive")]
+        public async Task<IActionResult> ReviveArmy()
+        {
+            var user = await _utilityService.GetUser();
+            var userUnits = await _context.UserUnits.Where(x => x.UserId == user.Id)
+                .Include(u => u.Unit).ToListAsync();
+
+            var bananaCost = 1000;
+            if (user.Bananas < bananaCost)
+                return BadRequest("Not enough bananas! You need 1000 to revive your army.");
+
+            var armyAlreadyAlive = true;
+            var random = new Random();
+            foreach (var userUnit in userUnits)
+            {
+                if (userUnit.HitPoints <= 0)
+                {
+                    armyAlreadyAlive = false;
+                    userUnit.HitPoints = random.Next(0, 100);
+                }
+            }
+
+            if (armyAlreadyAlive)
+                return Ok("Your army is already alive.");
+
+            user.Bananas -= bananaCost;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Army revived");
+        }
     }
 }

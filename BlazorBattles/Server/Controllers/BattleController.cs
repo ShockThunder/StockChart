@@ -31,12 +31,12 @@ namespace BlazorBattles.Server.Controllers
                 return NotFound("Opponent not available.");
 
             var result = new BattleResult();
-            await Fight(attacker, opponent, result);
+            result = await Fight(attacker, opponent, result);
 
-            return Ok();
+            return Ok(result);
         }
 
-        private async Task Fight(User attacker, User opponent, BattleResult result)
+        private async Task<BattleResult> Fight(User attacker, User opponent, BattleResult result)
         {
             var attackerArmy = await _context.UserUnits
                 .Where(x => x.UserId == attacker.Id && x.HitPoints > 0)
@@ -70,6 +70,8 @@ namespace BlazorBattles.Server.Controllers
             {
                 await FinishFight(attacker, opponent, result, attackerDamageSum, opponentDamageSum);
             }
+
+            return result;
         }
 
         private async Task FinishFight(User attacker, User opponent, BattleResult result, int attackerDamageSum, int opponentDamageSum)
@@ -95,7 +97,21 @@ namespace BlazorBattles.Server.Controllers
                 attacker.Bananas += opponentDamageSum * 10;
             }
 
+            StoreBattleHistory(attacker, opponent, result);
+
             await _context.SaveChangesAsync();
+        }
+
+        private void StoreBattleHistory(User attacker, User opponent, BattleResult result)
+        {
+            var battle = new Battle();
+            battle.Attacker = attacker;
+            battle.Opponent = opponent;
+            battle.RoundsFought = result.RoundsFought;
+            battle.WinnerDamage = result.IsVictory ? result.AttackerDamageSum : result.OpponentDamageSum;
+            battle.Winner = result.IsVictory ? attacker : opponent;
+
+            _context.Battles.Add(battle);
         }
 
         private int FightRound(User attacker, User opponent, List<UserUnit> attackerArmy, List<UserUnit> opponentArmy, BattleResult result)
@@ -129,7 +145,7 @@ namespace BlazorBattles.Server.Controllers
                 opponentArmy.Remove(randomOpponent);
 
                 result.Log.Add(
-                    $"{attacker.UserName}'s {randomAttacker.Unit.Title} kills" +
+                    $"{attacker.UserName}'s {randomAttacker.Unit.Title} kills " +
                     $"{opponent.UserName}'s {randomOpponent.Unit.Title}!");
 
                 return damage;

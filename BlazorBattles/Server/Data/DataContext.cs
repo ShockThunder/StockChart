@@ -12,8 +12,22 @@ namespace BlazorBattles.Server.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Unit>().Property(p => p.Id).UseIdentityAlwaysColumn();
             modelBuilder.Entity<User>().Property(p => p.Id).UseIdentityAlwaysColumn();
+            modelBuilder.Entity<Battle>()
+                .HasOne(x => x.Attacker)
+                .WithMany()
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Battle>()
+                .HasOne(x => x.Opponent)
+                .WithMany()
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Battle>()
+                .HasOne(x => x.Winner)
+                .WithMany()
+                .OnDelete(DeleteBehavior.NoAction);
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -21,5 +35,7 @@ namespace BlazorBattles.Server.Data
         public DbSet<User> Users { get; set; }
 
         public DbSet<UserUnit> UserUnits { get; set; }
+
+        public DbSet<Battle> Battles { get; set; }
     }
 }

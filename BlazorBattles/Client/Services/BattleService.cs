@@ -13,6 +13,12 @@ namespace BlazorBattles.Client.Services
         }
 
         public BattleResult LastBattle { get; set; } = new BattleResult();
+        public IList<BattleHistoryEntry> History { get; set; } = new List<BattleHistoryEntry>();
+
+        public async Task GetHistory()
+        {
+            History = await _httpClient.GetFromJsonAsync<BattleHistoryEntry[]>("api/user/history");
+        }
 
         public async Task<BattleResult> StartBattle(int opponentId)
         {

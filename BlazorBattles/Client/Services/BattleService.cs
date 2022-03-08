@@ -11,11 +11,16 @@ namespace BlazorBattles.Client.Services
         {
             _httpClient = httpClient;
         }
+
+        public BattleResult LastBattle { get; set; } = new BattleResult();
+
         public async Task<BattleResult> StartBattle(int opponentId)
         {
             var result = await _httpClient.PostAsJsonAsync("api/battle", opponentId);
 
-            return await result.Content.ReadFromJsonAsync<BattleResult>();
+            LastBattle = await result.Content.ReadFromJsonAsync<BattleResult>();
+
+            return LastBattle;
         }
     }
 }
